@@ -1330,6 +1330,7 @@ module Mongo
           validate_max_min_pool_size!(key, opts)
           validate_max_connecting!(key, opts)
           validate_read!(key, opts)
+          validate_server_monitoring_mode!(key, opts)
           if key == :compressors
             compressors = valid_compressors(v)
 
@@ -1603,6 +1604,22 @@ module Mongo
         max_connecting = opts[:max_connecting] || Server::ConnectionPool::DEFAULT_MAX_CONNECTING
         if max_connecting <= 0
           raise Error::InvalidMaxConnecting.new(opts[:max_connecting])
+        end
+      end
+      true
+    end
+
+    # Validates whether the server_monitoring_mode option is valid.
+    #
+    # @param [ Symbol ] option The option to validate.
+    # @param [ Hash ] opts The client options.
+    #
+    # @return [ true ] If the option is valid.
+    # @raise [ Error::InvalidServerMonitoringMode ] If the option is invalid.
+    def validate_server_monitoring_mode!(option, opts)
+      if option == :server_monitoring_mode && opts.key?(:server_monitoring_mode)
+        unless ["auto", "stream", "poll"].include?(opts[:server_monitoring_mode])
+          raise Error::InvalidServerMonitoringMode
         end
       end
       true
