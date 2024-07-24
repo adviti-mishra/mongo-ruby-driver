@@ -167,6 +167,7 @@ require 'mongo/error/invalid_nonce'
 require 'mongo/error/invalid_read_concern'
 require 'mongo/error/invalid_replacement_document'
 require 'mongo/error/invalid_server_auth_response'
+require 'mongo/error/invalid_server_monitoring_mode'
 # Subclass of InvalidServerAuthResponse
 require 'mongo/error/invalid_server_auth_host'
 require 'mongo/error/invalid_server_preference'

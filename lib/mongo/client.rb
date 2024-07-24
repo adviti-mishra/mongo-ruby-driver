@@ -1619,7 +1619,7 @@ module Mongo
     def validate_server_monitoring_mode!(option, opts)
       if option == :server_monitoring_mode && opts.key?(:server_monitoring_mode)
         unless ["auto", "stream", "poll"].include?(opts[:server_monitoring_mode])
-          raise Error::InvalidServerMonitoringMode
+          raise Error::InvalidServerMonitoringMode.new(option)
         end
       end
       true
