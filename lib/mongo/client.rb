@@ -92,6 +92,7 @@ module Mongo
       :scan,
       :sdam_proc,
       :server_api,
+      :server_monitoring_mode,
       :server_selection_timeout,
       :socket_timeout,
       :srv_max_hosts,
@@ -348,6 +349,8 @@ module Mongo
     #   - *:deprecation_errors* -- boolean
     # @option options [ Integer ] :server_selection_timeout The timeout in seconds
     #   for selecting a server for an operation.
+    # @option options [ String ] :server_monitoring_mode The mode to use to monitor
+    #   the server(s). One of "poll", "stream" or "auto". Defaults to "auto".
     # @option options [ Float ] :socket_timeout The timeout, in seconds, to
     #   execute operations on a socket.
     # @option options [ Integer ] :srv_max_hosts The maximum number of mongoses
