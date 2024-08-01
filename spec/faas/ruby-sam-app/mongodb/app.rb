@@ -84,18 +84,30 @@ end
 
 class HeartbeatMonitor
 
+  attr_reader :streaming_heartbeat_count
+
   def initialize(stats_aggregator)
     @stats_aggregator = stats_aggregator
+    @streaming_heartbeat_count = 0
   end
 
   def started(event); end
 
   def succeeded(event)
     @stats_aggregator.add_heartbeat(event.duration)
+    if event.awaited?
+      @streaming_heartbeat_count += 1
+    end
   end
 
   def failed(event)
     @stats_aggregator.add_heartbeat(event.duration)
+  end
+
+  private
+
+  def reset
+    @streaming_heartbeat_count = 0
   end
 end
 
