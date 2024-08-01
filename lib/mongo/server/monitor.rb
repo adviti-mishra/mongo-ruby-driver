@@ -49,6 +49,10 @@ module Mongo
       # @deprecated Will be removed in version 3.0.
       RTT_WEIGHT_FACTOR = 0.2.freeze
 
+      # The default server monitoring mode. It acts like "poll" in a Faas envrionment and
+      # "stream" otherwise.
+      DEFAULT_SERVER_MONITORING_MODE = "auto".freeze
+
       # Create the new server monitor.
       #
       # @example Create the server monitor.
@@ -110,6 +114,21 @@ module Mongo
       # @return [ Float ] The heartbeat interval, in seconds.
       def heartbeat_interval
         options[:heartbeat_interval] || DEFAULT_HEARTBEAT_INTERVAL
+      end
+
+      # The monitoring mode for the server being monitored
+      #
+      # @return [ String ] The monitoring mode in effect. One of "stream" or "poll"
+      def server_monitoring_mode
+        _server_monitoring_mode =  server.options[:server_monitoring_mode] || DEFAULT_SERVER_MONITORING_MODE
+        if _server_monitoring_mode == "auto"
+          # a Faas envrionment
+          if monitor_app_metadata.Environment.faas?
+            "poll"
+          end
+          "stream"
+        end
+        _server_monitoring_mode
       end
 
       # @deprecated
@@ -329,8 +348,11 @@ module Mongo
           @connection = connection
           if tv_doc = result['topologyVersion']
             # Successful response, server 4.4+
-            create_push_monitor!(TopologyVersion.new(tv_doc))
-            push_monitor.run!
+            # stream mode is enabled
+            if server_monitoring_mode == "stream"
+              create_push_monitor!(TopologyVersion.new(tv_doc))
+              push_monitor.run!
+            end
           else
             # Failed response or pre-4.4 server
             stop_push_monitor!
