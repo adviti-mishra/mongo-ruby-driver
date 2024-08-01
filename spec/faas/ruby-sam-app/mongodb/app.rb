@@ -151,7 +151,13 @@ def lambda_handler(event:, context:)
   result = collection.insert_one({ name: 'test' })
   collection.delete_one({ _id: result.inserted_id })
   response = $stats_aggregator.result.to_json
+
+  # there ARE streaming heartbeats
+  if heartbeat_monitor.streaming_heartbeat_count != 0
+    raise "streaming_heartbeat_count was #{heartbeat_monitor.streaming_heartbeat_count} not 0"
+  end
   $stats_aggregator.reset
+  heartbeat_monitor.reset
   puts "Response: #{response}"
 
   {
